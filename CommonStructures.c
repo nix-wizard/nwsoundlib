@@ -246,7 +246,7 @@ readU8Table(struct U8Table *u8Table, FILE *file, u32 (*readBytes)(FILE *file, u3
 	u8Table->table = malloc(sizeof(u8) * u8Table->count);
 	addPointerToPointerList(u8Table->table, pointerList);
 	for (u32 i = 0; i < u8Table->count; i += 1) {
-		readBytes(file, 1);
+		u8Table->table[i] = readBytes(file, 1);
 	}
 
 	return STATUS_OK;
@@ -260,7 +260,7 @@ readU32Table(struct U32Table *u32Table, FILE *file, u32 (*readBytes)(FILE *file,
 	u32Table->table = malloc(sizeof(u32) * u32Table->count);
 	addPointerToPointerList(u32Table->table, pointerList);
 	for (u32 i = 0; i < u32Table->count; i += 1) {
-		readBytes(file, 4);
+		u32Table->table[i] = readBytes(file, 4);
 	}
 
 	return STATUS_OK;

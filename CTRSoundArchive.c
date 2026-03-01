@@ -235,9 +235,9 @@ Status
 readCTRStreamSoundExtension(struct CTRStreamSoundExtension *streamSoundExtension, FILE *soundArchiveFile, u32 (*readBytes)(FILE *file, u32 bytes))
 {
 	streamSoundExtension->filePosition = ftell(soundArchiveFile);
-	streamSoundExtension->streamTypeInfo = ftell(soundArchiveFile);
-	streamSoundExtension->loopStartFrame = ftell(soundArchiveFile);
-	streamSoundExtension->loopEndFrame = ftell(soundArchiveFile);
+	streamSoundExtension->streamTypeInfo = readBytes(soundArchiveFile, 4);
+	streamSoundExtension->loopStartFrame = readBytes(soundArchiveFile, 4);
+	streamSoundExtension->loopEndFrame = readBytes(soundArchiveFile, 4);
 
 	streamSoundExtension->streamTypeInfoParams.streamType = getByte(streamSoundExtension->streamTypeInfo, 0);
 	streamSoundExtension->streamTypeInfoParams.loopFlag = getByte(streamSoundExtension->streamTypeInfo, 1);
