@@ -73,8 +73,6 @@ freePointerList(struct PointerList pointerList)
 		free(pointerList.pointers[i]);
 	}
 	free(pointerList.pointers);
-
-	printf("Pointers freed!\n");
 }
 
 Status
