@@ -6,11 +6,11 @@
 
 #define BITFLAG(OPTIONPARAMETER) \
 	u32 currentIndex; \
-	for (u32 i = 0; i < 2; i += 1) { \
+	for (u32 i = 0; i < sizeof(optionParams)/sizeof(optionParams[0]); i += 1) { \
 		currentIndex = getBitFlagParameterIndex(OPTIONPARAMETER.bitFlag, optionParams[i].bitIndex); \
 		if (currentIndex != FALSE) { \
 			fseek(soundArchiveFile, OPTIONPARAMETER.filePosition + (currentIndex * 4), SEEK_SET); \
-			*optionParams->destination = readBytes(soundArchiveFile, 4); \
+			*optionParams[i].destination = readBytes(soundArchiveFile, 4); \
 		} \
 	}
 #define INFO(TABLEINDEX, LINKTABLE, INFO, TYPE, READER) \
