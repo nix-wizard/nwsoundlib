@@ -325,8 +325,14 @@ typedef struct {
 	} infoPartition;
 
 	struct CTRSoundArchiveFilePartition {
-		u32 filePosition;
-		struct PartitionHeader partitionHeader;
+		struct {
+			u32 filePosition;
+			struct PartitionHeader partitionHeader;
+		} header;
+		
+		struct {
+			u32 filePosition;	
+		} body;
 
 		char **files;
 	} filePartition;

@@ -18,6 +18,7 @@ main(int argc, char **argv)
 			return 1;
 		}
 		
+		fclose(soundArchiveFile);
 		freePointerList(soundArchive.pointerList);
 	}
 	else {
