@@ -746,14 +746,12 @@ readCTRSoundArchiveFilePartition(struct CTRSoundArchiveFilePartition *filePartit
 
 	filePartition->body.filePosition = ftell(soundArchiveFile);
 
-	u32 currentCount = 0;
 	ALLOCATE(filePartition->files, sizeof(char *) * infoPartition->body.fileInfoLinkTable.count);
 	for (u32 i = 0; i < infoPartition->body.fileInfoLinkTable.count; i += 1) {
 		if (infoPartition->body.fileInfo[i].toFileLocationInfo.referenceID == REFID_SOUNDARCHIVEFILE_INTERNALFILEINFO) {
-			ALLOCATE(filePartition->files[currentCount], infoPartition->body.fileInfo[i].internalFileInfo.toDataFromFilePartitionBody.length)
+			ALLOCATE(filePartition->files[i], infoPartition->body.fileInfo[i].internalFileInfo.toDataFromFilePartitionBody.length)
 			fseek(soundArchiveFile, filePartition->body.filePosition + infoPartition->body.fileInfo[i].internalFileInfo.toDataFromFilePartitionBody.offset, SEEK_SET);
-			fread(filePartition->files[currentCount], 1, infoPartition->body.fileInfo[i].internalFileInfo.toDataFromFilePartitionBody.length, soundArchiveFile);
-			currentCount += 1;
+			fread(filePartition->files[i], 1, infoPartition->body.fileInfo[i].internalFileInfo.toDataFromFilePartitionBody.length, soundArchiveFile);
 		}
 	}
 
