@@ -360,7 +360,7 @@ readCTRWaveSoundInfo(struct CTRWaveSoundInfo *waveSoundInfo, FILE *soundArchiveF
 }
 
 Status
-readCTRSequenceSoundInfo(struct CTRSequenceSoundInfo *sequenceSoundInfo, FILE *soundArchiveFile, u32 (*readBytes)(FILE *file, u32 bytes))
+readCTRSequenceSoundInfo(struct CTRSequenceSoundInfo *sequenceSoundInfo, FILE *soundArchiveFile, u32 (*readBytes)(FILE *file, u32 bytes), struct PointerList *pointerList)
 {
 	sequenceSoundInfo->filePosition = ftell(soundArchiveFile);
 	if (readLink(&sequenceSoundInfo->toBankIDTable, soundArchiveFile, readBytes) != STATUS_OK) {
@@ -382,6 +382,12 @@ readCTRSequenceSoundInfo(struct CTRSequenceSoundInfo *sequenceSoundInfo, FILE *s
 	/* Priority params */
 	sequenceSoundInfo->priorityParams.priorityChannelPriority = getByte(sequenceSoundInfo->priority, 0);
 	sequenceSoundInfo->priorityParams.isReleasePriorityFix = getByte(sequenceSoundInfo->priority, 1);
+
+	fseek(soundArchiveFile, sequenceSoundInfo->filePosition + sequenceSoundInfo->toBankIDTable.offset, SEEK_SET);
+	if (readU32Table(&sequenceSoundInfo->bankIDTable, soundArchiveFile, readBytes, pointerList) != STATUS_OK) {
+		fprintf(stderr, "Invalid sequence sound info bank ID table.\n");
+		return STATUS_ERR;
+	}
 
 	return STATUS_OK;
 }
@@ -462,7 +468,7 @@ readCTRSoundInfo(struct CTRSoundInfo *soundInfo, FILE *soundArchiveFile, u32 (*r
 		break;
 	case REFID_SOUNDARCHIVEFILE_SEQUENCESOUNDINFO:
 		fseek(soundArchiveFile, soundInfo->filePosition + soundInfo->extraInfoLink.offset, SEEK_SET);
-		if (readCTRSequenceSoundInfo(&soundInfo->sequenceSoundInfo, soundArchiveFile, readBytes) != STATUS_OK) {
+		if (readCTRSequenceSoundInfo(&soundInfo->sequenceSoundInfo, soundArchiveFile, readBytes, pointerList) != STATUS_OK) {
 			fprintf(stderr, "Invalid extra info in sound info.\n");
 			return STATUS_ERR;
 		}

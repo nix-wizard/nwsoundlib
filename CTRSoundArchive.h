@@ -214,7 +214,7 @@ typedef struct {
 					} priorityParams;
 
 					/* To bank ID table */
-					struct CTRItemIDTable bankIDTable;
+					struct U32Table bankIDTable;
 				} sequenceSoundInfo;
 			} *soundInfo;
 
@@ -381,7 +381,7 @@ Status
 readCTRWaveSoundInfo(struct CTRWaveSoundInfo *waveSoundInfo, FILE *soundArchiveFile, u32 (*readBytes)(FILE *file, u32 bytes));
 
 Status
-readCTRSequenceSoundInfo(struct CTRSequenceSoundInfo *sequenceSoundInfo, FILE *soundArchiveFile, u32 (*readBytes)(FILE *file, u32 bytes));
+readCTRSequenceSoundInfo(struct CTRSequenceSoundInfo *sequenceSoundInfo, FILE *soundArchiveFile, u32 (*readBytes)(FILE *file, u32 bytes), struct PointerList *pointerList);
 
 Status
 readCTRSoundInfo(struct CTRSoundInfo *soundInfo, FILE *soundArchiveFile, u32 (*readBytes)(FILE *file, u32 bytes), struct PointerList *pointerList);
