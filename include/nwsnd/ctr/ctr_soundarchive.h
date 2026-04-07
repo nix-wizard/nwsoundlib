@@ -47,7 +47,7 @@ typedef struct {
 			struct LinkWithLengthTable filenameLinkTable;
 			struct {
 				u32 filePosition;
-				char *filename;
+				u8 *filename;
 			} *filenameTable;
 			struct CTR_SoundArchive_PatriciaTree {
 				u32 filePosition;
@@ -130,89 +130,91 @@ typedef struct {
 				} sound3DInfo;
 
 				/* Extra info types */
-				struct CTR_SoundArchive_StreamSoundInfo {
-					u32 filePosition;
-					u16 allocateTrackFlags;
-					u16 allocateChannelCount;
-					struct Link toStreamTrackInfoLinkTable; /* 0x0101 */
-					f32 pitch;
-					struct Link toSendValue;
-					struct Link toStreamSoundExtension; /* 0x2210 & offset not 0xffffffff */
-					u32 prefetchFileID;
-
-					/* To stream track info link table */
-					struct LinkTable streamTrackInfoLinkTable;
-
-					/* To stream track info */
-					struct CTR_SoundArchive_StreamTrackInfo {
+				union {
+					struct CTR_SoundArchive_StreamSoundInfo {
 						u32 filePosition;
-						u8 volume;
-						u8 pan;
-						u8 span;
-						u8 flags;
-						struct Link toGlobalChannelIndexTable;
-						struct Link toSendValue; /* 0x220F */
-						u8 lpfFreq;
-						u8 biquadType;
-						u8 biquadValue;
-						/* 1 byte padding */
+						u16 allocateTrackFlags;
+						u16 allocateChannelCount;
+						struct Link toStreamTrackInfoLinkTable; /* 0x0101 */
+						f32 pitch;
+						struct Link toSendValue;
+						struct Link toStreamSoundExtension; /* 0x2210 & offset not 0xffffffff */
+						u32 prefetchFileID;
 
-						/* To global channel index table */
-						struct U8Table globalChannelIndexTable;
+						/* To stream track info link table */
+						struct LinkTable streamTrackInfoLinkTable;
+
+						/* To stream track info */
+						struct CTR_SoundArchive_StreamTrackInfo {
+							u32 filePosition;
+							u8 volume;
+							u8 pan;
+							u8 span;
+							u8 flags;
+							struct Link toGlobalChannelIndexTable;
+							struct Link toSendValue; /* 0x220F */
+							u8 lpfFreq;
+							u8 biquadType;
+							u8 biquadValue;
+							/* 1 byte padding */
+
+							/* To global channel index table */
+							struct U8Table globalChannelIndexTable;
+
+							/* To send value */
+							struct CTR_SoundArchive_SendValue sendValue;
+						} *streamTrackInfo;
 
 						/* To send value */
 						struct CTR_SoundArchive_SendValue sendValue;
-					} *streamTrackInfo;
 
-					/* To send value */
-					struct CTR_SoundArchive_SendValue sendValue;
+						/* To stream sound extension */
+						struct CTR_SoundArchive_StreamSoundExtension {
+							u32 filePosition;
+							u32 streamTypeInfo;
+							u32 loopStartFrame;
+							u32 loopEndFrame;
 
-					/* To stream sound extension */
-					struct CTR_SoundArchive_StreamSoundExtension {
+							struct {
+								u8 streamType; /* 0 */
+								Bool loopFlag; /* 1 */
+							} streamTypeInfoParams;
+						} streamSoundExtension;
+					} streamSoundInfo;
+					/* TODO: legacy stream sound info */
+
+					struct CTR_SoundArchive_WaveSoundInfo {
 						u32 filePosition;
-						u32 streamTypeInfo;
-						u32 loopStartFrame;
-						u32 loopEndFrame;
+						u32 index;
+						u32 allocateTrackCount;
+						struct OptionParameter optionParameter;
+						/* Parameters */
+						u32 priority; /* 0x00 */
 
 						struct {
-							u8 streamType; /* 0 */
-							Bool loopFlag; /* 1 */
-						} streamTypeInfoParams;
-					} streamSoundExtension;
-				} streamSoundInfo;
-				/* TODO: legacy stream sound info */
+							u8 priorityChannelPriority; /* 0 */
+							Bool isReleasePriorityFix; /* 1 */
+						} priorityParams;
+					} waveSoundInfo;
 
-				struct CTR_SoundArchive_WaveSoundInfo {
-					u32 filePosition;
-					u32 index;
-					u32 allocateTrackCount;
-					struct OptionParameter optionParameter;
-					/* Parameters */
-					u32 priority; /* 0x00 */
+					struct CTR_SoundArchive_SequenceSoundInfo {
+						u32 filePosition;
+						struct Link toBankIDTable;
+						u32 allocateTrackFlags;
+						struct OptionParameter optionParameter;
+						/* Parameters */
+						u32 startOffset; /* 0x00 */
+						u32 priority;
 
-					struct {
-						u8 priorityChannelPriority; /* 0 */
-						Bool isReleasePriorityFix; /* 1 */
-					} priorityParams;
-				} waveSoundInfo;
+						struct {
+							u8 priorityChannelPriority; /* 0 */
+							Bool isReleasePriorityFix; /* 1 */
+						} priorityParams;
 
-				struct CTR_SoundArchive_SequenceSoundInfo {
-					u32 filePosition;
-					struct Link toBankIDTable;
-					u32 allocateTrackFlags;
-					struct OptionParameter optionParameter;
-					/* Parameters */
-					u32 startOffset; /* 0x00 */
-					u32 priority;
-
-					struct {
-						u8 priorityChannelPriority; /* 0 */
-						Bool isReleasePriorityFix; /* 1 */
-					} priorityParams;
-
-					/* To bank ID table */
-					struct U32Table bankIDTable;
-				} sequenceSoundInfo;
+						/* To bank ID table */
+						struct U32Table bankIDTable;
+					} sequenceSoundInfo;
+				};
 			} *soundInfo;
 
 			struct LinkTable soundGroupInfoLinkTable;
@@ -303,7 +305,7 @@ typedef struct {
 
 				struct CTR_SoundArchive_ExternalFileLocationInfo { /* 0x220d */
 					u32 filePosition;
-					char *filePath; /* Null-terminated */
+					u8 *filePath; /* Null-terminated */
 				} externalFileInfo;
 			} *fileInfo;
 

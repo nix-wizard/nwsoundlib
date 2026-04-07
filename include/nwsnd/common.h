@@ -203,6 +203,12 @@ struct FileHeader {
 	u16 partitionCount;
 };
 
+struct SoundFileHeader {
+	u32 filePosition;
+	struct FileHeader fileHeader;
+	struct LinkWithLength *partitionLinkTable;
+};
+
 struct PartitionHeader {
 	u32 filePosition;
 	char partitionType[5];
@@ -277,6 +283,9 @@ freePointerList(struct PointerList pointerList);
 
 Status
 readFileHeader(struct FileHeader *fileHeader, FILE *file, char fileType[4], u32 (**readBytesPointer)(FILE *, u32));
+
+Status
+readSoundFileHeader(struct SoundFileHeader *soundFileHeader, FILE *file, char fileType[4], u32 (**readBytesPointer)(FILE *, u32), u32 partitionCount, struct PointerList *pointerList);
 
 Status
 readPartitionHeader(struct PartitionHeader *partitionHeader, FILE *file, char partitionType[4], u32 (*readBytes)(FILE *file, u32 bytes));

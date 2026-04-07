@@ -99,6 +99,20 @@ readFileHeader(struct FileHeader *fileHeader, FILE *file, char fileType[4], u32 
 }
 
 Status
+readSoundFileHeader(struct SoundFileHeader *soundFileHeader, FILE *file, char *fileType, u32 (**readBytesPointer)(FILE *, u32), u32 partitionCount, struct PointerList *pointerList)
+{
+	soundFileHeader->filePosition = ftell(file);
+	CATCH(readFileHeader(&soundFileHeader->fileHeader, file, fileType, readBytesPointer) != STATUS_OK, "file header", "sound file header")
+
+	ALLOCATE(soundFileHeader->partitionLinkTable, sizeof(struct LinkWithLength) * partitionCount);
+	for (u32 i = 0; i < partitionCount; i += 1) {
+		CATCH(readLinkWithLength(&soundFileHeader->partitionLinkTable[i], file, *readBytesPointer), "link", "sound file header partition link table");
+	}
+
+	return STATUS_OK;
+}
+
+Status
 readPartitionHeader(struct PartitionHeader *partitionHeader, FILE *file, char partitionType[4], u32 (*readBytes)(FILE *file, u32 bytes))
 {
 	partitionHeader->filePosition = ftell(file);
